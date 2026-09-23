@@ -66,3 +66,28 @@ If compromised AWS credentials are used to create expensive EC2 or RDS resources
 | ------------------------ | -------------------------------------------------------------------- |
 | `02-budget-overview.png` | AWS Budget, 80% actual notification and 100% forecasted notification |
 | `02-budget-action.png`   | Automatic 90% Budget Action and IAM policy configuration             |
+
+
+
+
+## Task 3 — IAM Identities and Least Privilege
+
+This task implements IAM identities using the principle of least privilege. Each identity receives only the permissions required for its intended purpose.
+
+| Identity               | What it can do                                                                                       | Why                                                                                                   |
+| ---------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `depi-sec-developers`  | Read-only access to AWS resources through `ReadOnlyAccess`                                           | Allows developers to inspect AWS resources without modifying infrastructure                           |
+| `depi-dev-1`           | Console access through the `depi-sec-developers` group                                               | Provides a developer identity without attaching direct permissions to the user                        |
+| `depi-sec-ec2-role`    | EC2 can assume the role; access to AWS Systems Manager and `s3:GetObject` for the application bucket | Allows EC2 to access only the services required by the workload without storing permanent access keys |
+| `depi-sec-s3-app-read` | `s3:GetObject` only on `arn:aws:s3:::depi-sec-app-mahmoud-2026/*`                                    | Provides application-level read access to objects in the specific S3 bucket and nothing else          |
+
+### Security Principle
+
+The EC2 workload uses an IAM role instead of an IAM user and permanent access keys. The role provides temporary credentials that can be rotated automatically, reducing the risk associated with long-lived credentials stored in `user_data` or source code.
+
+### Evidence
+
+| Screenshot                | Description                 |
+| ------------------------- | --------------------------- |
+| `03-ec2-role-trust.png`   | EC2 role trust relationship |
+| `03-s3-custom-policy.png` | Custom S3 policy JSON       |

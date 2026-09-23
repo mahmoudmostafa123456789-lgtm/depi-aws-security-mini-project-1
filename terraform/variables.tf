@@ -20,3 +20,10 @@ variable "alert_email" {
   description = "Email address for security alerts"
   type        = string
 }
+
+
+variable "app_bucket_name" {
+  description = "Exact S3 bucket name for the application"
+  type        = string
+}
+
