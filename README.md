@@ -91,3 +91,12 @@ The EC2 workload uses an IAM role instead of an IAM user and permanent access ke
 | ------------------------- | --------------------------- |
 | `03-ec2-role-trust.png`   | EC2 role trust relationship |
 | `03-s3-custom-policy.png` | Custom S3 policy JSON       |
+
+
+
+
+## Security Group vs Network ACL
+
+Security Groups and Network ACLs provide different layers of network security in AWS. A Security Group is stateful and is associated with network interfaces, so return traffic is automatically allowed when the corresponding outbound or inbound connection is permitted. A Network ACL is stateless and operates at the subnet level, so both inbound and outbound traffic must be explicitly allowed. In this project, Security Groups provide application-tier access control between the ALB, application, database, and EFS tiers, while the custom Network ACL provides an additional subnet-level security layer for the private subnets, including an explicit deny rule for inbound SSH traffic on port 22 and explicit ephemeral port rules for return traffic.
+
+
