@@ -21,3 +21,12 @@ The project covers:
 
 The infrastructure is managed as Infrastructure as Code using Terraform.
 
+
+
+
+
+## Cost Governance as a Security Control
+
+The monthly AWS budget is implemented as a security control, not only as a financial monitoring mechanism. A budget notification can alert the team when spending increases, but the budget action provides an automatic preventive response. When the monthly cost reaches 90% of the $10 threshold, AWS Budgets automatically applies the `depi-sec-deny-expensive` IAM policy to the protected IAM group. This policy denies the creation of new EC2 instances and RDS database instances. This helps limit the impact of compromised credentials or unauthorized activity that could create additional AWS resources and increase costs.
+
+
