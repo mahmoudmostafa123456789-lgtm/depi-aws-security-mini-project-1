@@ -40,3 +40,9 @@ The monthly AWS budget is implemented as a security control, not only as a finan
 | `depi-sec-s3-app-read` | `s3:GetObject` only on the application bucket objects        | Limits S3 access to the specific operation and resource required by the application                                |
 
 
+
+
+## Security Group vs Network ACL
+
+The project uses both Security Groups and Network ACLs as complementary network security layers. Security Groups are stateful, meaning that when inbound traffic is allowed, the corresponding return traffic is automatically allowed. Network ACLs are stateless, so both inbound traffic and the required return traffic must be explicitly allowed. The custom NACL is associated with the two private subnets and allows required HTTP, HTTPS, and ephemeral return traffic while explicitly denying inbound SSH traffic on TCP port 22. This provides an additional subnet-level security layer even if a Security Group is incorrectly configured.
+

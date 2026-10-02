@@ -93,3 +93,128 @@ resource "aws_vpc_security_group_ingress_rule" "efs_nfs_from_app" {
 }
 
 
+resource "aws_network_acl" "private" {
+  vpc_id = aws_vpc.app.id
+
+  tags = {
+    Name = "depi-sec-private-nacl"
+  }
+}
+
+
+# =========================
+# Inbound Rules
+# =========================
+
+# Allow TCP 80 from inside the VPC
+resource "aws_network_acl_rule" "private_inbound_http" {
+  network_acl_id = aws_network_acl.private.id
+
+  rule_number = 100
+  egress      = false
+
+  protocol    = "tcp"
+  rule_action = "allow"
+
+  cidr_block = "10.0.0.0/16"
+
+  from_port = 80
+  to_port   = 80
+}
+
+# Allow TCP 443 from inside the VPC
+resource "aws_network_acl_rule" "private_inbound_https" {
+  network_acl_id = aws_network_acl.private.id
+
+  rule_number = 110
+  egress      = false
+
+  protocol    = "tcp"
+  rule_action = "allow"
+
+  cidr_block = "10.0.0.0/16"
+
+  from_port = 443
+  to_port   = 443
+}
+
+# Allow ephemeral ports for return traffic
+resource "aws_network_acl_rule" "private_inbound_ephemeral" {
+  network_acl_id = aws_network_acl.private.id
+
+  rule_number = 120
+  egress      = false
+
+  protocol    = "tcp"
+  rule_action = "allow"
+
+  cidr_block = "10.0.0.0/16"
+
+  from_port = 1024
+  to_port   = 65535
+}
+
+# Explicitly deny SSH
+resource "aws_network_acl_rule" "private_inbound_ssh_deny" {
+  network_acl_id = aws_network_acl.private.id
+
+  rule_number = 200
+  egress      = false
+
+  protocol    = "tcp"
+  rule_action = "deny"
+
+  cidr_block = "0.0.0.0/0"
+
+  from_port = 22
+  to_port   = 22
+}
+
+
+# =========================
+# Outbound Rules
+# =========================
+
+# Allow all traffic inside the VPC
+resource "aws_network_acl_rule" "private_outbound_vpc" {
+  network_acl_id = aws_network_acl.private.id
+
+  rule_number = 100
+  egress      = true
+
+  protocol    = "-1"
+  rule_action = "allow"
+
+  cidr_block = "10.0.0.0/16"
+}
+
+# Allow HTTPS to the Internet
+resource "aws_network_acl_rule" "private_outbound_https" {
+  network_acl_id = aws_network_acl.private.id
+
+  rule_number = 110
+  egress      = true
+
+  protocol    = "tcp"
+  rule_action = "allow"
+
+  cidr_block = "0.0.0.0/0"
+
+  from_port = 443
+  to_port   = 443
+}
+
+
+# =========================
+# Associate with Private Subnets
+# =========================
+
+resource "aws_network_acl_association" "private_az1" {
+  network_acl_id = aws_network_acl.private.id
+  subnet_id      = aws_subnet.private_az1.id
+}
+
+resource "aws_network_acl_association" "private_az2" {
+  network_acl_id = aws_network_acl.private.id
+  subnet_id      = aws_subnet.private_az2.id
+}
