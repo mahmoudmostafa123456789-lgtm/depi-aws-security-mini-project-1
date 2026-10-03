@@ -218,3 +218,60 @@ resource "aws_network_acl_association" "private_az2" {
   network_acl_id = aws_network_acl.private.id
   subnet_id      = aws_subnet.private_az2.id
 }
+
+
+
+
+
+
+
+
+
+
+
+
+# =========================
+# Outbound Rules
+# =========================
+
+resource "aws_vpc_security_group_egress_rule" "alb_all_outbound" {
+  security_group_id = aws_security_group.alb.id
+
+  description = "Allow outbound traffic"
+  ip_protocol = "-1"
+  cidr_ipv4   = "0.0.0.0/0"
+}
+
+resource "aws_vpc_security_group_egress_rule" "app_all_outbound" {
+  security_group_id = aws_security_group.app.id
+
+  description = "Allow outbound traffic"
+  ip_protocol = "-1"
+  cidr_ipv4   = "0.0.0.0/0"
+}
+
+resource "aws_vpc_security_group_egress_rule" "db_all_outbound" {
+  security_group_id = aws_security_group.db.id
+
+  description = "Allow outbound traffic"
+  ip_protocol = "-1"
+  cidr_ipv4   = "0.0.0.0/0"
+}
+
+resource "aws_vpc_security_group_egress_rule" "efs_all_outbound" {
+  security_group_id = aws_security_group.efs.id
+
+  description = "Allow outbound traffic"
+  ip_protocol = "-1"
+  cidr_ipv4   = "0.0.0.0/0"
+}
+
+resource "aws_vpc_security_group_egress_rule" "endpoint_all_outbound" {
+  security_group_id = aws_security_group.endpoint.id
+
+  description = "Allow outbound traffic"
+  ip_protocol = "-1"
+  cidr_ipv4   = "0.0.0.0/0"
+}
+
+

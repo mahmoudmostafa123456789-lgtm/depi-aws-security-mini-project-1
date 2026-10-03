@@ -46,3 +46,9 @@ The monthly AWS budget is implemented as a security control, not only as a finan
 
 The project uses both Security Groups and Network ACLs as complementary network security layers. Security Groups are stateful, meaning that when inbound traffic is allowed, the corresponding return traffic is automatically allowed. Network ACLs are stateless, so both inbound traffic and the required return traffic must be explicitly allowed. The custom NACL is associated with the two private subnets and allows required HTTP, HTTPS, and ephemeral return traffic while explicitly denying inbound SSH traffic on TCP port 22. This provides an additional subnet-level security layer even if a Security Group is incorrectly configured.
 
+
+
+## Why Session Manager Is Safer Than SSH Keys
+
+The EC2 web servers are deployed in private subnets with no public IPv4 addresses and no SSH key pairs. Instead of exposing TCP port 22, the instances use an IAM instance profile with the `AmazonSSMManagedInstanceCore` policy and communicate with AWS Systems Manager through private VPC Interface Endpoints. This removes the need to expose SSH to the network and avoids managing long-lived SSH private keys for server administration. Session Manager provides authenticated access through AWS IAM while keeping the servers private.
+
