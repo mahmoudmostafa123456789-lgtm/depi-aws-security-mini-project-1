@@ -149,7 +149,8 @@ resource "aws_s3_bucket_policy" "app" {
 
 resource "aws_s3_bucket_policy" "logs" {
   bucket = aws_s3_bucket.logs.id
-  policy = data.aws_iam_policy_document.logs_bucket_policy.json
+
+  policy = data.aws_iam_policy_document.logs_bucket_combined.json
 }
 
 # =========================================================
