@@ -74,15 +74,20 @@ resource "aws_lb_target_group_attachment" "web_az2" {
 
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.app.arn
-  port              = 80
-  protocol          = "HTTP"
+
+  port     = 80
+  protocol = "HTTP"
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.app.arn
+    type = "fixed-response"
+
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "Forbidden"
+      status_code  = "403"
+    }
   }
 }
-
 # =========================================================
 # ALB DNS
 # =========================================================
@@ -90,4 +95,28 @@ resource "aws_lb_listener" "http" {
 output "alb_dns_name" {
   description = "Public DNS name of the Application Load Balancer"
   value       = aws_lb.app.dns_name
+}
+
+
+
+
+resource "aws_lb_listener_rule" "cloudfront_origin" {
+  listener_arn = aws_lb_listener.http.arn
+
+  priority = 100
+
+  condition {
+    http_header {
+      http_header_name = "X-Origin-Verify"
+
+      values = [
+        random_password.cloudfront_origin_secret.result
+      ]
+    }
+  }
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.app.arn
+  }
 }
