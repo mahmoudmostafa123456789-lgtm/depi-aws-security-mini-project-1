@@ -96,3 +96,9 @@ The bucket policy was also verified to contain the `DenyInsecureTransport` state
 S3 Block Public Access protects against unintended public exposure, but it does not replace IAM authorization.
 
 An authenticated IAM identity can still access objects when its IAM permissions allow actions such as `s3:GetObject`.
+
+
+
+VPC Flow Logs record network metadata such as source/destination IPs, ports, protocol, packet/byte counts, timestamps, and whether traffic was accepted or rejected; they do not record packet contents.
+
+
