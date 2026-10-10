@@ -52,3 +52,25 @@ The project uses both Security Groups and Network ACLs as complementary network 
 
 The EC2 web servers are deployed in private subnets with no public IPv4 addresses and no SSH key pairs. Instead of exposing TCP port 22, the instances use an IAM instance profile with the `AmazonSSMManagedInstanceCore` policy and communicate with AWS Systems Manager through private VPC Interface Endpoints. This removes the need to expose SSH to the network and avoids managing long-lived SSH private keys for server administration. Session Manager provides authenticated access through AWS IAM while keeping the servers private.
 
+
+
+
+### Task 7 — Security Group Auto-Remediation
+
+**Objective:** Automatically detect and remediate public SSH/RDP ingress rules on the application security group.
+
+**AWS Services:** AWS Lambda, Amazon EventBridge, AWS CloudTrail, Amazon SNS, Amazon CloudWatch, AWS IAM, and Amazon EC2.
+
+**Implementation:**
+- Created a least-privilege IAM role for the remediation Lambda.
+- Configured an EventBridge rule to detect `AuthorizeSecurityGroupIngress` API events.
+- Implemented Python logic to inspect the application security group and revoke public IPv4 TCP/22 or TCP/3389 ingress rules.
+- Configured SNS notifications and CloudWatch logging.
+- Tested the remediation workflow using a temporary public SSH rule.
+
+**Evidence:**
+- `screenshots/task7/task7-01-before-remediation.png`
+- `screenshots/task7/task7-02-after-remediation.png`
+- `screenshots/task7/task7-03-lambda-cloudwatch-logs.png`
+
+**Security note:** The remediation is scoped to the designated application security group. The Lambda checks the actual ingress rules before revoking matching rules.
